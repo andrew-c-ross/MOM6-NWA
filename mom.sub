@@ -1,0 +1,35 @@
+#!/bin/bash
+#SBATCH -n 96
+#SBATCH --time=12:00:00
+#SBATCH -J MOM6
+#SBATCH --error=MOM6.%J.err
+#SBATCH --output=MOM6.%J.out
+#SBATCH -p triton16
+####SBATCH -p triton16
+
+#set -x
+
+. /usr/share/Modules/init/bash
+
+#module load gcc/4.8.2
+#module load netcdf/4.3.0-gcc4.8.2
+#module load openmpi/1.8.5_gcc4.8.2
+
+module load gcc/4.8.2
+module load netcdf/4.3.0-gcc4.4.7
+module load openmpi/1.8.5_gcc4.4.7
+
+export NC_BLKSZ=1M
+
+#------------------------------------------------------------------------------------
+# run the code
+#------------------------------------------------------------------------------------
+
+if [ ! -d RESTART ] ; then mkdir RESTART ; fi
+rm ocean.stats.nc
+cp /t1/scratch/dujuan/ESMG/NWA/build/gnu/ice_ocean_SIS2/repro/MOM6 .
+
+#srun --cpu_bind=rank -n 96 ./MOM6 
+#srun --cpu_bind=rank -n 80 ./MOM6 
+srun --cpu_bind=rank -n 96 ./MOM6 
+
